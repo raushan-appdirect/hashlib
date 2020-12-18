@@ -14,9 +14,9 @@ import javax.mail.internet.MimeMessage;
 public class NotificationServiceImpl implements NotificationService {
 
     @Override
-    public void sendNotification(String message, String emails) {
+    public void sendNotification(String subject, String message, String emails) {
         try {
-            send("raushan.a.test", "Test@123", emails, "Notification", message);
+            send("raushan.a.test", "Test@123", emails, subject, message);
         } catch (MessagingException e) {
             System.err.println("Unable to send email" + e.getMessage());
         }

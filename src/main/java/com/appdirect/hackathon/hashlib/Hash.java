@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 
 public class Hash {
 
+    private static final String SUBJECT = "Important! Error validating chunk data";
     private static final String EMAIL_TEMPLATE = "Hi," +
             "\n" +
             "\nThe validation of the following data chunk is failed : " +
@@ -51,7 +52,7 @@ public class Hash {
     public static boolean validateAndNotify(List<String> ids, String hash, String chunkId, String toEmails) throws NoSuchAlgorithmException {
         boolean result = validate(ids, hash);
         if(!result) {
-            notificationService.sendNotification(String.format(EMAIL_TEMPLATE, chunkId), toEmails);
+            notificationService.sendNotification(SUBJECT, String.format(EMAIL_TEMPLATE, chunkId), toEmails);
         }
 
         return result;
@@ -68,7 +69,7 @@ public class Hash {
 
         System.out.println(calculate(ids));
 
-        validateAndNotify(ids, "9b379d66b053026bbac350e08708e1ba37faa0259b0c542f8b66c48727d79400", String.format(EMAIL_TEMPLATE, "123"), "raushan.amar@appdirect.com");
+        validateAndNotify(ids, "9b379d66b053026bbac350e08708e1ba37faa0259b0c542f8b66c48727d79400", "123", "raushan.amar@appdirect.com");
 
     }
 }
