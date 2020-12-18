@@ -14,6 +14,14 @@ import java.util.stream.IntStream;
 
 public class Hash {
 
+    private static final String EMAIL_TEMPLATE = "Hi," +
+            "\n" +
+            "\nThe validation of the following data chunk is failed : " +
+            "\nChunk id : %s" +
+            "\n" +
+            "\nPlease retry processing for the chunk." +
+            "\nThanks! ";
+
     private static NotificationService notificationService = new NotificationServiceImpl();
 
     public static String calculate(List<String> ids) throws NoSuchAlgorithmException {
@@ -27,10 +35,7 @@ public class Hash {
 
     public static boolean validate(List<String> ids, String hash) throws NoSuchAlgorithmException {
         String calculatedHash = calculate(ids);
-        if(calculatedHash.equals(hash)) {
-            return true;
-        }
-        return false;
+        return calculatedHash.equals(hash);
     }
 
     /**
@@ -38,22 +43,18 @@ public class Hash {
      *
      * @param ids
      * @param hash
-     * @param message Email body message e.g "Chunk : " + chunkId + " validation failed"
-     * @param toEmails Comma seperated list of email ids to which notification will be send e.g. "raushan.amar@appdirect.com, bhupendra.singh@appdirect.com, ketan.mulay@appdirect.com"
+     * @param chunkId chunkId
+     * @param toEmails Comma separated list of email ids to which notification will be send e.g. "raushan.amar@appdirect.com, bhupendra.singh@appdirect.com, ketan.mulay@appdirect.com"
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static boolean validateAndNotify(List<String> ids, String hash, String message, String toEmails) throws NoSuchAlgorithmException {
+    public static boolean validateAndNotify(List<String> ids, String hash, String chunkId, String toEmails) throws NoSuchAlgorithmException {
         boolean result = validate(ids, hash);
         if(!result) {
-            notificationService.sendNotification(message, toEmails);
+            notificationService.sendNotification(String.format(EMAIL_TEMPLATE, chunkId), toEmails);
         }
 
         return result;
-    }
-
-    public static boolean validateAndNotify(List<String> ids, String hash, String chunkId) throws NoSuchAlgorithmException {
-        return validateAndNotify(ids, hash, "Chunk : " + chunkId + " validation failed", "raushan.amar@appdirect.com, bhupendra.singh@appdirect.com, ketan.mulay@appdirect.com");
     }
 
 
@@ -67,6 +68,7 @@ public class Hash {
 
         System.out.println(calculate(ids));
 
-        validateAndNotify(ids, "9b379d66b053026bbac350e08708e1ba37faa0259b0c542f8b66c48727d79400", "Chunk : " + "abc" + " validation failed", "raushan.amar@appdirect.com");
+        validateAndNotify(ids, "9b379d66b053026bbac350e08708e1ba37faa0259b0c542f8b66c48727d79400", String.format(EMAIL_TEMPLATE, "123"), "raushan.amar@appdirect.com");
+
     }
 }
