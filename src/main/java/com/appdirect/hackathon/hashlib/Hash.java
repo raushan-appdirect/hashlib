@@ -25,16 +25,22 @@ public class Hash {
 
     private static NotificationService notificationService = new NotificationServiceImpl();
 
-    public static String calculate(List<String> ids) throws NoSuchAlgorithmException {
-        String collect = ids.stream().sorted().collect(Collectors.joining());
+    public static String calculate(List<String> ids) {
+        String collect = ids.stream().sorted().collect(Collectors.joining(":"));
 
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println(e.getMessage());
+            return "Error:" + e.getMessage();
+        }
         byte[] digest = md.digest(collect.getBytes());
 
         return String.format("%032x", new BigInteger(1, digest));
     }
 
-    public static boolean validate(List<String> ids, String hash) throws NoSuchAlgorithmException {
+    public static boolean validate(List<String> ids, String hash) {
         String calculatedHash = calculate(ids);
         return calculatedHash.equals(hash);
     }
@@ -49,7 +55,7 @@ public class Hash {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public static boolean validateAndNotify(List<String> ids, String hash, String chunkId, String toEmails) throws NoSuchAlgorithmException {
+    public static boolean validateAndNotify(List<String> ids, String hash, String chunkId, String toEmails) {
         boolean result = validate(ids, hash);
         if(!result) {
             notificationService.sendNotification(SUBJECT, String.format(EMAIL_TEMPLATE, chunkId), toEmails);
@@ -59,7 +65,7 @@ public class Hash {
     }
 
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
+    public static void main(String[] args) {
         System.out.println(calculate(Arrays.asList("abc", "xyz")));
         System.out.println(calculate(Arrays.asList("aba", "xyz")));
         System.out.println(calculate(Arrays.asList("aba")));
